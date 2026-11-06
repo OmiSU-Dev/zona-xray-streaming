@@ -18,4 +18,5 @@ git push -u zona zona/baseline-2026.9.12
 Unpacked reference only (no `.git`) lives at  
 `../xray-monolith-all-in-one-vs2022-wpo/` in the installer repo.
 
-Documentation index: [`../docs/engine/README.md`](../docs/engine/README.md).
+Documentation index: [`../docs/engine/README.md`](../docs/engine/README.md).  
+Megamap-related C++ touchpoints: [`MEGAMAP-ENGINE-NOTES.md`](MEGAMAP-ENGINE-NOTES.md).
