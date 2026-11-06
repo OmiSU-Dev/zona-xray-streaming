@@ -1,6 +1,6 @@
-# Building xray-monolith (ZONA baseline)
+# Building Monolith Reforged (ZONA baseline)
 
-**Host:** Windows **only**. This repo does not support building the full Anomaly engine on Linux.
+**Host:** Windows **only**. This tree does not support building the full Anomaly engine on Linux.
 
 ## Prerequisites
 

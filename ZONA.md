@@ -1,6 +1,6 @@
 # ZONA (“Monolith Reforged”) — fork baseline
 
-This tree is a **git clone** of [themrdemonized/xray-monolith](https://github.com/themrdemonized/xray-monolith) used for ZONA engine work.
+This directory (**`monolith-reforged/`**) is a **git clone** of [themrdemonized/xray-monolith](https://github.com/themrdemonized/xray-monolith) used for ZONA engine work (“Monolith Reforged”).
 
 | Item | Value |
 |------|--------|
@@ -11,7 +11,7 @@ This tree is a **git clone** of [themrdemonized/xray-monolith](https://github.co
 Add your GitHub fork when ready:
 
 ```bash
-git remote add zona git@github.com:YOUR_USER/zona-xray-engine.git
+git remote add zona git@github.com:YOUR_USER/monolith-reforged.git
 git push -u zona zona/baseline-2026.9.12
 ```
 
