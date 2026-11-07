@@ -119,15 +119,31 @@ void CALifeUpdateManager::update()
 
 void CALifeUpdateManager::mount_level_population()
 {
+	CSE_ALifeCreatureActor* actor = graph().actor();
 	xr_vector<CSE_ALifeDynamicObject*> online;
 	CALifeObjectRegistry::OBJECT_REGISTRY::const_iterator I = objects().objects().begin();
 	CALifeObjectRegistry::OBJECT_REGISTRY::const_iterator E = objects().objects().end();
 	for (; I != E; ++I)
 	{
 		CSE_ALifeDynamicObject* object = (*I).second;
-		if (!object || !object->m_bOnline)
+		if (!object || !object->m_bOnline || object == actor)
 			continue;
-		if (object == graph().actor())
+
+		bool owned = false;
+		ALife::_OBJECT_ID parent = object->ID_Parent;
+		for (int guard = 0; actor && parent != 0xffff && guard < 8; ++guard)
+		{
+			if (parent == actor->ID)
+			{
+				owned = true;
+				break;
+			}
+			CSE_ALifeDynamicObject* holder = objects().object(parent, true);
+			if (!holder)
+				break;
+			parent = holder->ID_Parent;
+		}
+		if (owned)
 			continue;
 		online.push_back(object);
 	}
