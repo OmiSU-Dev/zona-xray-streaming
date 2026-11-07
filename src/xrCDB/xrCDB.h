@@ -83,6 +83,7 @@ namespace CDB
 	public:
 		MODEL();
 		~MODEL();
+		void reset();
 
 		IC Fvector* get_verts() { return verts; }
 		IC const Fvector* get_verts() const { return verts; }

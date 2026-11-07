@@ -132,6 +132,7 @@ void CObjectSpace::Load(IReader* F, CDB::build_callback build_callback)
 void CObjectSpace::Create(Fvector* verts, CDB::TRI* tris, const hdrCFORM& H, CDB::build_callback build_callback)
 {
 	R_ASSERT(CFORM_CURRENT_VERSION==H.version);
+	Static.reset();
 	Static.build(verts, H.vertcount, tris, H.facecount, build_callback);
 	m_BoundingVolume.set(H.aabb);
 	g_SpatialSpace->initialize(m_BoundingVolume);

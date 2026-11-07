@@ -54,6 +54,11 @@ MODEL::MODEL()
 
 MODEL::~MODEL()
 {
+	reset();
+}
+
+void MODEL::reset()
+{
 	syncronize(); // maybe model still in building
 	status = S_INIT;
 	CDELETE(tree);
