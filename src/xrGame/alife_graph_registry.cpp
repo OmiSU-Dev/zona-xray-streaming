@@ -99,6 +99,14 @@ void CALifeGraphRegistry::retarget_level()
 {
 	xr_delete(m_level);
 	setup_current_level();
+
+	string_path fn_game;
+	if (FS.exist(fn_game, "$level$", "level.game"))
+	{
+		IReader* stream = FS.r_open(fn_game);
+		ai().patrol_path_storage_raw(*stream);
+		FS.r_close(stream);
+	}
 }
 
 void CALifeGraphRegistry::attach(CSE_Abstract& object, CSE_ALifeInventoryItem* item,

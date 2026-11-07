@@ -17,7 +17,6 @@
 #include "ef_storage.h"
 #include "xrserver.h"
 #include "level.h"
-#include "ai_space.h"
 #include "graph_engine.h"
 #include "../xrEngine/x_ray.h"
 #include "restriction_space.h"
@@ -138,16 +137,8 @@ void CALifeUpdateManager::mount_level_population()
 
 	graph().retarget_level();
 
-	string_path fn_game;
-	if (FS.exist(fn_game, "$level$", "level.game"))
-	{
-		IReader* stream = FS.r_open(fn_game);
-		ai().patrol_path_storage_raw(*stream);
-		FS.r_close(stream);
-	}
-
 	Msg("* [ZONA stream] ALife retargeted to %s", Level().name().c_str());
-	update();
+	graph().level().update(CSwitchPredicate(this), true);
 }
 
 void CALifeUpdateManager::shedule_Update(u32 dt)
