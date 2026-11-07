@@ -95,6 +95,12 @@ void CALifeGraphRegistry::setup_current_level()
 	ai().load(*(*I).second.name());
 }
 
+void CALifeGraphRegistry::retarget_level()
+{
+	xr_delete(m_level);
+	setup_current_level();
+}
+
 void CALifeGraphRegistry::attach(CSE_Abstract& object, CSE_ALifeInventoryItem* item,
                                  GameGraph::_GRAPH_ID game_vertex_id, bool alife_query, bool add_children)
 {

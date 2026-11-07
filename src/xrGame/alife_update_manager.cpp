@@ -17,6 +17,7 @@
 #include "ef_storage.h"
 #include "xrserver.h"
 #include "level.h"
+#include "ai_space.h"
 #include "graph_engine.h"
 #include "../xrEngine/x_ray.h"
 #include "restriction_space.h"
@@ -115,6 +116,38 @@ void CALifeUpdateManager::update()
 {
 	update_switch();
 	update_scheduled(false);
+}
+
+void CALifeUpdateManager::mount_level_population()
+{
+	xr_vector<CSE_ALifeDynamicObject*> online;
+	CALifeObjectRegistry::OBJECT_REGISTRY::const_iterator I = objects().objects().begin();
+	CALifeObjectRegistry::OBJECT_REGISTRY::const_iterator E = objects().objects().end();
+	for (; I != E; ++I)
+	{
+		CSE_ALifeDynamicObject* object = (*I).second;
+		if (!object || !object->m_bOnline)
+			continue;
+		if (object == graph().actor())
+			continue;
+		online.push_back(object);
+	}
+
+	for (u32 i = 0; i < online.size(); ++i)
+		switch_offline(online[i]);
+
+	graph().retarget_level();
+
+	string_path fn_game;
+	if (FS.exist(fn_game, "$level$", "level.game"))
+	{
+		IReader* stream = FS.r_open(fn_game);
+		ai().patrol_path_storage_raw(*stream);
+		FS.r_close(stream);
+	}
+
+	Msg("* [ZONA stream] ALife retargeted to %s", Level().name().c_str());
+	update();
 }
 
 void CALifeUpdateManager::shedule_Update(u32 dt)

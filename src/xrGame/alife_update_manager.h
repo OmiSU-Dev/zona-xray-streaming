@@ -34,6 +34,7 @@ protected:
 
 public:
 	void __stdcall update();
+	void mount_level_population();
 
 protected:
 	void new_game(LPCSTR save_name);

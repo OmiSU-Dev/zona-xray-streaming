@@ -461,6 +461,8 @@ namespace ZonaStreaming
 		if (CActor* a = Actor())
 			a->MoveActor(wp, wd);
 
+		ai().alife().mount_level_population();
+
 		DbgMsg("* [ZONA stream] server handoff → %s (no autosave reconnect)", dest);
 		return true;
 	}
