@@ -40,6 +40,7 @@
 #include "MainMenu.h"
 #include "xrEngine/XR_IOConsole.h"
 #include "actor.h"
+#include "zona_streaming.h"
 #include "player_hud.h"
 #include "UI/UIGameTutorial.h"
 #include "file_transfer.h"
@@ -1037,6 +1038,9 @@ void CLevel::OnFrame()
 			Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(m_map_manager, &CMapManager::Update));
 		else
 			MapManager().Update();
+		if (IsGameTypeSingle())
+			ZonaStreaming::OnFrame();
+
 		if (IsGameTypeSingle() && Device.dwPrecacheFrame == 0)
 		{
 			// XXX nitrocaster: was enabled in x-ray 1.5; to be restored or removed

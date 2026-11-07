@@ -987,9 +987,15 @@ void CGamePersistent::OnRenderPPUI_PP()
 
 #include "string_table.h"
 #include "../xrEngine/x_ray.h"
+#include "zona_streaming.h"
 
 void CGamePersistent::LoadTitle(bool change_tip, shared_str map_name)
 {
+	if (ZonaStreaming::SuppressLoadUI())
+	{
+		pApp->LoadStage();
+		return;
+	}
 	pApp->LoadStage();
 	if (change_tip)
 	{

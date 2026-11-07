@@ -16,6 +16,7 @@
 #include "file_transfer.h"
 #include "message_filter.h"
 #include "../xrphysics/iphworld.h"
+#include "zona_streaming.h"
 
 extern LPCSTR map_ver_string;
 
@@ -310,6 +311,15 @@ void CLevel::ClientReceive()
 #ifdef DEBUG
 				Msg("--- Changing level message received...");
 #endif // #ifdef DEBUG
+				if (m_type == M_CHANGE_LEVEL)
+				{
+					ZonaChangeLevelRequest zona_req;
+					NET_Packet zona_copy = *P;
+					if (ZonaStreaming::ParseChangeLevelPacket(zona_copy, zona_req) &&
+					    ZonaStreaming::ClientHandoffChangeLevel(zona_req))
+						break;
+				}
+
                 Msg("Device.LuaGC clear");
                 Device.LuaGC.clear();
                 Device.LuaGCDebug.clear();

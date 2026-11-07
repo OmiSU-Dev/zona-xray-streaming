@@ -3065,6 +3065,8 @@
     <ClCompile Include="..\Level_Bullet_Manager.cpp" />
     <ClCompile Include="..\Level_bullet_manager_firetrace.cpp" />
     <ClCompile Include="..\level_changer.cpp" />
+    <ClCompile Include="..\zona_streaming.cpp" />
+    <ClCompile Include="..\zona_streaming_mount.cpp" />
     <ClCompile Include="..\level_debug.cpp" />
     <ClCompile Include="..\Level_GameSpy_Funcs.cpp" />
     <ClCompile Include="..\level_graph.cpp" />

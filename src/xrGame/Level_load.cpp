@@ -18,6 +18,7 @@
 #include "character_reputation.h"
 #include "monster_community.h"
 #include "HudManager.h"
+#include "zona_streaming.h"
 
 extern ENGINE_API bool g_dedicated_server;
 
@@ -42,7 +43,9 @@ bool CLevel::Load_GameSpecific_Before()
 	CHARACTER_COMMUNITY::Reset();
 	CHARACTER_RANK::Reset();
 	CHARACTER_REPUTATION::Reset();
-	MONSTER_COMMUNITY::Reset();
+		MONSTER_COMMUNITY::Reset();
+
+	ZonaStreaming::OnLevelLoaded();
 
 	return (TRUE);
 }

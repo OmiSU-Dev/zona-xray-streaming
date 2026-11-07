@@ -22,6 +22,7 @@
 #include "restriction_space.h"
 #include "profiler.h"
 #include "mt_config.h"
+#include "zona_streaming.h"
 
 using namespace ALife;
 #ifdef	ENGINE_LUA_ALIFE_UPDAGE_MANAGER_CALLBACKS
@@ -166,6 +167,16 @@ bool CALifeUpdateManager::change_level(NET_Packet& net_packet)
 	if (ai().script_engine().functor("_G.CALifeUpdateManager__on_before_change_level", funct))
 		funct(&net_packet);
 #endif
+
+	{
+		NET_Packet pkt_copy = net_packet;
+		ZonaChangeLevelRequest zona_req;
+		if (ZonaStreaming::ParseChangeLevelPacket(pkt_copy, zona_req))
+		{
+			if (ZonaStreaming::ServerApplyChangeLevel(zona_req))
+				return (false); // handoff done — do not broadcast M_CHANGE_LEVEL (no load screen)
+		}
+	}
 
 	//	prepare_objects_for_save		();
 	// we couldn't use prepare_objects_for_save since we need 
