@@ -129,6 +129,43 @@ void CObjectSpace::Load(IReader* F, CDB::build_callback build_callback)
 	FS.r_close(F);
 }
 
+void CObjectSpace::AppendStatic(const Fvector* addV, int addVn, CDB::TRI* addT, int addTn)
+{
+	if (!addV || !addT || addVn < 4 || addTn < 2)
+		return;
+
+	const int oldVn = Static.get_verts_count();
+	const int oldTn = Static.get_tris_count();
+	xr_vector<Fvector> verts;
+	xr_vector<CDB::TRI> tris;
+	verts.resize(oldVn + addVn);
+	tris.resize(oldTn + addTn);
+	if (oldVn > 0)
+		CopyMemory(verts.data(), Static.get_verts(), oldVn * sizeof(Fvector));
+	if (oldTn > 0)
+		CopyMemory(tris.data(), Static.get_tris(), oldTn * sizeof(CDB::TRI));
+
+	for (int i = 0; i < addVn; ++i)
+		verts[oldVn + i] = addV[i];
+	for (int i = 0; i < addTn; ++i)
+	{
+		CDB::TRI tri = addT[i];
+		tri.verts[0] += u32(oldVn);
+		tri.verts[1] += u32(oldVn);
+		tri.verts[2] += u32(oldVn);
+		tris[oldTn + i] = tri;
+	}
+
+	Fbox box;
+	box.invalidate();
+	for (const Fvector& v : verts)
+		box.modify(v);
+
+	Static.reset();
+	Static.build(verts.data(), int(verts.size()), tris.data(), int(tris.size()), nullptr);
+	m_BoundingVolume.set(box);
+}
+
 void CObjectSpace::Create(Fvector* verts, CDB::TRI* tris, const hdrCFORM& H, CDB::build_callback build_callback)
 {
 	R_ASSERT(CFORM_CURRENT_VERSION==H.version);

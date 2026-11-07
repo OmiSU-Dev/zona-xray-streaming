@@ -8,10 +8,12 @@
 #include "../xrCore/xrCore.h"
 #include "../xrEngine/render.h"
 #include "../xrEngine/IGame_Level.h"
+#include "../xrEngine/xrLevel.h"
 #include "../xrCDB/xr_area.h"
 namespace
 {
 	BOOL g_suppress_load_ui = FALSE;
+	shared_str g_mounted_neighbor;
 
 	LPCSTR DefaultLevelVersion(LPCSTR level_name)
 	{
@@ -77,6 +79,56 @@ namespace ZonaStreamingMount
 		g_suppress_load_ui = FALSE;
 
 		Msg("* [ZONA stream] InPlaceZoneSwap complete (%s)", dest_level_name);
+		g_mounted_neighbor = "";
+		return true;
+	}
+
+	bool MountNeighborCollision(LPCSTR dest_level_name, const Fvector& offset_delta)
+	{
+		if (!dest_level_name || !*dest_level_name || !g_pGameLevel)
+			return false;
+		if (g_mounted_neighbor.size())
+			return 0 == stricmp(g_mounted_neighbor.c_str(), dest_level_name);
+
+		if (pApp->Level_ID(dest_level_name, DefaultLevelVersion(dest_level_name), false) < 0)
+		{
+			Msg("! [ZONA stream] neighbor collision: unknown level %s", dest_level_name);
+			return false;
+		}
+
+		string_path rel;
+		xr_sprintf(rel, "%s\\level.cform", dest_level_name);
+		IReader* F = FS.r_open("$game_levels$", rel);
+		if (!F)
+		{
+			Msg("! [ZONA stream] neighbor collision: missing %s", rel);
+			return false;
+		}
+
+		hdrCFORM H;
+		F->r(&H, sizeof(H));
+		if (H.version != CFORM_CURRENT_VERSION || H.vertcount < 4 || H.facecount < 2)
+		{
+			FS.r_close(F);
+			Msg("! [ZONA stream] neighbor collision: bad cform %s", dest_level_name);
+			return false;
+		}
+
+		xr_vector<Fvector> verts(H.vertcount);
+		xr_vector<CDB::TRI> tris(H.facecount);
+		F->r(verts.data(), H.vertcount * sizeof(Fvector));
+		F->r(tris.data(), H.facecount * sizeof(CDB::TRI));
+		FS.r_close(F);
+
+		for (Fvector& v : verts)
+			v.add(offset_delta);
+
+		g_pGameLevel->Load_GameSpecific_CFORM(tris.data(), H.facecount);
+		g_pGameLevel->ObjectSpace.AppendStatic(verts.data(), int(verts.size()), tris.data(), int(tris.size()));
+
+		g_mounted_neighbor = dest_level_name;
+		Msg("* [ZONA stream] neighbor collision mounted: %s offset %.0f %.0f %.0f (%u tris)",
+		    dest_level_name, offset_delta.x, offset_delta.y, offset_delta.z, H.facecount);
 		return true;
 	}
 }

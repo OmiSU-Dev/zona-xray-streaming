@@ -59,6 +59,8 @@ public:
 	void Load(CDB::build_callback build_callback);
 	void Load(LPCSTR path, LPCSTR fname, CDB::build_callback build_callback);
 	void Load(IReader* R, CDB::build_callback build_callback);
+	// Append already-remapped triangles (vertex indices are local to addV) and rebuild.
+	void AppendStatic(const Fvector* addV, int addVn, CDB::TRI* addT, int addTn);
 	void Create(Fvector* verts, CDB::TRI* tris, const hdrCFORM& H, CDB::build_callback build_callback);
 	// Occluded/No
 	BOOL RayTest(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt,
