@@ -24,6 +24,7 @@ namespace ZonaStreaming
 
 	bool IsActive();
 	bool IsStreamableLevel(LPCSTR level_name);
+	bool ShouldAutoCrossBorder(GameGraph::_GRAPH_ID dest_graph_id);
 
 	bool ParseChangeLevelPacket(NET_Packet& packet, ZonaChangeLevelRequest& out);
 	LPCSTR DestinationLevelName(const ZonaChangeLevelRequest& req);

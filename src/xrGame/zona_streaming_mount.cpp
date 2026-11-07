@@ -72,6 +72,8 @@ namespace ZonaStreamingMount
 		Render->level_Load(level_stream);
 		FS.r_close(level_stream);
 
+		Level().SetStreamingLevelName(dest_level_name);
+
 		g_suppress_load_ui = FALSE;
 
 		Msg("* [ZONA stream] InPlaceZoneSwap complete (%s)", dest_level_name);

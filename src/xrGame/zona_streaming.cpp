@@ -320,12 +320,38 @@ namespace ZonaStreaming
 		return z && z->streamable;
 	}
 
+	bool ShouldAutoCrossBorder(GameGraph::_GRAPH_ID dest_graph_id)
+	{
+		if (!IsActive() || (!g_no_loadscreen && !g_zona_stream_geom_lab))
+			return false;
+		if (!ai().get_game_graph() || !ai().game_graph().valid_vertex_id(dest_graph_id))
+			return false;
+		const CGameGraph& gg = ai().game_graph();
+		const u8 lid = gg.vertex(dest_graph_id)->level_id();
+		const CGameGraph::SLevel& lv = gg.header().level(lid);
+		return IsStreamableLevel(lv.name().c_str());
+	}
+
 	bool ParseChangeLevelPacket(NET_Packet& packet, ZonaChangeLevelRequest& out)
 	{
-		u16 type;
-		packet.r_begin(type);
-		if (type != M_CHANGE_LEVEL)
+		if (packet.r_tell() == 0)
+		{
+			u16 type = 0;
+			packet.r_begin(type);
+			if (type != M_CHANGE_LEVEL)
+				return false;
+		}
+		else if (packet.r_tell() == sizeof(u16))
+		{
+			u16 type = 0;
+			CopyMemory(&type, packet.B.data, sizeof(u16));
+			if (type != M_CHANGE_LEVEL)
+				return false;
+		}
+		else
+		{
 			return false;
+		}
 
 		packet.r(&out.game_vertex_id, sizeof(out.game_vertex_id));
 		packet.r(&out.level_vertex_id, sizeof(out.level_vertex_id));
@@ -350,14 +376,6 @@ namespace ZonaStreaming
 	{
 		world_pos = req.position;
 		world_dir = req.angles;
-		if (!ai().get_game_graph())
-			return;
-
-		const CGameGraph& gg = ai().game_graph();
-		if (gg.valid_vertex_id(req.game_vertex_id))
-			world_pos = gg.vertex(req.game_vertex_id)->game_point();
-
-		world_dir.getHP(world_dir.y, world_dir.x);
 	}
 
 	bool EnsureZoneLoaded(LPCSTR level_name)
@@ -375,10 +393,11 @@ namespace ZonaStreaming
 			return true;
 		}
 
-		if (IsStreamableLevel(level_name) && g_armed[level_name] && (g_no_loadscreen || g_zona_stream_geom_lab))
+		if (IsStreamableLevel(level_name) && (g_no_loadscreen || g_zona_stream_geom_lab))
 		{
 			if (ZonaStreamingMount::InPlaceZoneSwap(level_name))
 			{
+				g_mounted.clear();
 				g_mounted[level_name] = true;
 				g_armed.clear();
 				return true;

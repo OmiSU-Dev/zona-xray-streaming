@@ -318,6 +318,7 @@ public:
 	virtual ~CLevel();
 	// названияе текущего уровня
 	virtual shared_str name() const;
+	void SetStreamingLevelName(LPCSTR new_name) { map_data.m_name = new_name; }
 	// this method can be used ONLY from CCC_ChangeGameType
 	// XXX nitrocaster: why c_str?
 	shared_str version() const { return map_data.m_map_version.c_str(); }

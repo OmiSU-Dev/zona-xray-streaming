@@ -19,6 +19,7 @@
 
 #include "UIGameSP.h"
 #include "../xrengine/xr_collide_form.h"
+#include "zona_streaming.h"
 
 xr_vector<CLevelChanger*> g_lchangers;
 
@@ -125,7 +126,7 @@ void CLevelChanger::feel_touch_new(CObject* tpObject)
 	if (!l_tpActor->g_Alive())
 		return;
 
-	if (m_bSilentMode)
+	if (m_bSilentMode || (m_b_enabled && ZonaStreaming::ShouldAutoCrossBorder(m_game_vertex_id)))
 	{
 		NET_Packet p;
 		p.w_begin(M_CHANGE_LEVEL);
@@ -134,6 +135,7 @@ void CLevelChanger::feel_touch_new(CObject* tpObject)
 		p.w_vec3(m_position);
 		p.w_vec3(m_angles);
 		Level().Send(p, net_flags(TRUE));
+		m_entrance_time = Device.fTimeGlobal;
 		return;
 	}
 	Fvector p, r;
@@ -182,7 +184,8 @@ bool CLevelChanger::feel_touch_contact(CObject* object)
 
 void CLevelChanger::update_actor_invitation()
 {
-	if (m_bSilentMode) return;
+	if (m_bSilentMode || (m_b_enabled && ZonaStreaming::ShouldAutoCrossBorder(m_game_vertex_id)))
+		return;
 	xr_vector<CObject*>::iterator it = feel_touch.begin();
 	xr_vector<CObject*>::iterator it_e = feel_touch.end();
 
