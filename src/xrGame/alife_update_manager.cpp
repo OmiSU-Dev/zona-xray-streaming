@@ -154,7 +154,9 @@ void CALifeUpdateManager::mount_level_population()
 	graph().retarget_level();
 
 	Msg("* [ZONA stream] ALife retargeted to %s", Level().name().c_str());
-	graph().level().update(CSwitchPredicate(this), true);
+	// Spawn on the normal schedule. A full switch inside the level-change
+	// handler faults while the load screen is still up.
+	m_first_time = true;
 }
 
 void CALifeUpdateManager::shedule_Update(u32 dt)
