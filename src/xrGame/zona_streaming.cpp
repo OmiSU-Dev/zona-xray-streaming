@@ -461,8 +461,6 @@ namespace ZonaStreaming
 		if (CActor* a = Actor())
 			a->MoveActor(wp, wd);
 
-		const_cast<CALifeSimulator&>(ai().alife()).mount_level_population();
-
 		DbgMsg("* [ZONA stream] server handoff → %s (no autosave reconnect)", dest);
 		return true;
 	}
@@ -532,6 +530,9 @@ namespace ZonaStreaming
 				       edge.to_level.c_str());
 			}
 			ArmStreamableHandoff(edge.to_level.c_str());
+
+			if (physical.size() && 0 == stricmp(physical.c_str(), "fake_start"))
+				continue;
 
 			Fvector from_off, to_off;
 			from_off.set(0, 0, 0);
