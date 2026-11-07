@@ -12,6 +12,7 @@
 #include "xrmessages.h"
 #include "Actor.h"
 #include "../xrEngine/xr_ioconsole.h"
+#include "../xrEngine/xr_ioc_cmd.h"
 #include "../xrCore/xr_ini.h"
 #include "zona_streaming_mount.h"
 
@@ -176,11 +177,19 @@ namespace
 		if (ini.section_exist("zona_streaming"))
 		{
 			g_cfg_enabled = ini.r_bool("zona_streaming", "enabled");
-			g_load_radius_m = ini.r_float("zona_streaming", "load_radius_m", 400.f);
-			g_unload_radius_m = ini.r_float("zona_streaming", "unload_radius_m", 600.f);
-			g_border_preload_m = ini.r_float("zona_streaming", "border_preload_m", 91.f);
+			g_load_radius_m = ini.line_exist("zona_streaming", "load_radius_m")
+			                    ? ini.r_float("zona_streaming", "load_radius_m")
+			                    : 400.f;
+			g_unload_radius_m = ini.line_exist("zona_streaming", "unload_radius_m")
+			                      ? ini.r_float("zona_streaming", "unload_radius_m")
+			                      : 600.f;
+			g_border_preload_m = ini.line_exist("zona_streaming", "border_preload_m")
+			                       ? ini.r_float("zona_streaming", "border_preload_m")
+			                       : 91.f;
 			g_no_loadscreen = ini.r_bool("zona_streaming", "no_loadscreen");
-			g_anchor_level = ini.r_string_wb("zona_streaming", "anchor_level", "l01_escape");
+			g_anchor_level = ini.line_exist("zona_streaming", "anchor_level")
+			                   ? ini.r_string_wb("zona_streaming", "anchor_level")
+			                   : shared_str("l01_escape");
 		}
 
 		CInifile::Root& sections = ini.sections();
