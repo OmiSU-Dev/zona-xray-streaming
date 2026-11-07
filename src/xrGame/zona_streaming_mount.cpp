@@ -5,6 +5,7 @@
 #include "zona_streaming_mount.h"
 #include "Level.h"
 #include "../xrEngine/x_ray.h"
+#include "../xrCore/xrCore.h"
 #include "../xrEngine/render.h"
 #include "../xrEngine/IGame_Level.h"
 #include "../xrCDB/xr_area.h"

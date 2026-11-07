@@ -11,7 +11,7 @@
 #include "alife_graph_registry.h"
 #include "xrmessages.h"
 #include "Actor.h"
-#include "xr_ioconsole.h"
+#include "../xrEngine/xr_ioconsole.h"
 #include "../xrEngine/xr_ini.h"
 #include "zona_streaming_mount.h"
 
