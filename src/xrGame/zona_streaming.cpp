@@ -12,7 +12,7 @@
 #include "xrmessages.h"
 #include "Actor.h"
 #include "../xrEngine/xr_ioconsole.h"
-#include "../xrEngine/xr_ini.h"
+#include "../xrCore/xr_ini.h"
 #include "zona_streaming_mount.h"
 
 namespace

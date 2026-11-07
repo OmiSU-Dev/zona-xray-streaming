@@ -48,7 +48,7 @@ namespace ZonaStreamingMount
 			return false;
 		}
 
-		if (Level().name().size() && !xr_stricmp(Level().name().c_str(), dest_level_name))
+		if (Level().name().size() && 0 == stricmp(Level().name().c_str(), dest_level_name))
 			return true;
 
 		Msg("* [ZONA stream] InPlaceZoneSwap → %s", dest_level_name);
