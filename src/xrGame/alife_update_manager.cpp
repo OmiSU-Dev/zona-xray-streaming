@@ -25,6 +25,7 @@
 #include "mt_config.h"
 #include "zona_streaming.h"
 #include "GameObject.h"
+#include "ai_object_location.h"
 
 using namespace ALife;
 #ifdef	ENGINE_LUA_ALIFE_UPDAGE_MANAGER_CALLBACKS
