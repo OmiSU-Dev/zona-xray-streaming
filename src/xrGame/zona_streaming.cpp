@@ -532,22 +532,6 @@ namespace ZonaStreaming
 				       edge.to_level.c_str());
 			}
 			ArmStreamableHandoff(edge.to_level.c_str());
-
-			if (physical.size() && 0 == stricmp(physical.c_str(), "fake_start"))
-				continue;
-
-			Fvector from_off, to_off;
-			from_off.set(0, 0, 0);
-			to_off.set(0, 0, 0);
-			const SZoneEntry* from_z = FindZone(edge.from_level.c_str());
-			const SZoneEntry* to_z = FindZone(edge.to_level.c_str());
-			if (from_z)
-				from_off = from_z->offset;
-			if (to_z)
-				to_off = to_z->offset;
-			Fvector delta;
-			delta.sub(to_off, from_off);
-			ZonaStreamingMount::MountNeighborCollision(edge.to_level.c_str(), delta);
 		}
 
 		for (const auto& z : g_zones)
