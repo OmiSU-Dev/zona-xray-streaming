@@ -17,6 +17,7 @@
 #include "ef_storage.h"
 #include "xrserver.h"
 #include "level.h"
+#include "ai_space.h"
 #include "graph_engine.h"
 #include "../xrEngine/x_ray.h"
 #include "restriction_space.h"
@@ -153,10 +154,29 @@ void CALifeUpdateManager::mount_level_population()
 
 	graph().retarget_level();
 
-	Msg("* [ZONA stream] ALife retargeted to %s", Level().name().c_str());
-	// Spawn on the normal schedule. A full switch inside the level-change
-	// handler faults while the load screen is still up.
-	m_first_time = true;
+	u32 brought_online = 0;
+	ALife::D_OBJECT_P_MAP::const_iterator LI = graph().level().objects().begin();
+	ALife::D_OBJECT_P_MAP::const_iterator LE = graph().level().objects().end();
+	for (; LI != LE; ++LI)
+	{
+		CSE_ALifeDynamicObject* object = (*LI).second;
+		if (!object || object == actor || object->m_bOnline)
+			continue;
+		if (object->ID_Parent != 0xffff)
+			continue;
+		if (Level().Objects.net_Find(object->ID))
+			continue;
+		if (object->used_ai_locations() && !ai().level_graph().valid_vertex_id(object->m_tNodeID))
+			continue;
+		if (!actor || actor->o_Position.distance_to(object->o_Position) > online_distance())
+			continue;
+
+		try_switch_online(object);
+		if (object->m_bOnline)
+			++brought_online;
+	}
+
+	Msg("* [ZONA stream] ALife retargeted to %s, nearby online %u", Level().name().c_str(), brought_online);
 }
 
 void CALifeUpdateManager::shedule_Update(u32 dt)

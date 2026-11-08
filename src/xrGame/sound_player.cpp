@@ -177,7 +177,8 @@ void CSoundPlayer::play(u32 internal_type, u32 max_start_time, u32 min_start_tim
 		return;
 
 	SOUND_COLLECTIONS::iterator I = m_sounds.find(internal_type);
-	VERIFY(m_sounds.end() != I);
+	if (m_sounds.end() == I || !(*I).second.second)
+		return;
 	CSoundCollectionParamsFull& sound = (*I).second.first;
 	if ((*I).second.second->m_sounds.empty())
 	{
@@ -186,12 +187,19 @@ void CSoundPlayer::play(u32 internal_type, u32 max_start_time, u32 min_start_tim
 #endif
 		return;
 	}
+	if (!m_object || !m_object->Visual())
+		return;
+	IKinematics* kinematics = smart_cast<IKinematics*>(m_object->Visual());
+	if (!kinematics)
+		return;
+
 	remove_inappropriate_sounds(sound.m_synchro_mask);
 
 	CSoundSingle sound_single;
 	(CSoundParams&)sound_single = (CSoundParams&)sound;
-	sound_single.m_bone_id = smart_cast<IKinematics*>(m_object->Visual())->LL_BoneID(sound.m_bone_name);
-	R_ASSERT(sound_single.m_bone_id != BI_NONE);
+	sound_single.m_bone_id = kinematics->LL_BoneID(sound.m_bone_name);
+	if (sound_single.m_bone_id == BI_NONE)
+		return;
 
 	sound_single.m_sound = xr_new<ref_sound>();
 	/**
