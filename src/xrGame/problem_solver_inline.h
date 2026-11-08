@@ -194,6 +194,10 @@ IC typename CProblemSolverAbstract::_condition_evaluator_ptr CProblemSolverAbstr
 {
 	EVALUATORS::const_iterator I = evaluators().find(condition_id);
 	THROW(evaluators().end() != I);
+	// Release builds compile THROW out. A streamed level change can ask for a
+	// condition before its evaluator exists; the end iterator's pointer is null.
+	if (I == evaluators().end() || !(*I).second)
+		return nullptr;
 	return ((*I).second);
 }
 
@@ -209,7 +213,20 @@ IC void CProblemSolverAbstract::evaluate_condition(typename xr_vector<COperatorC
                                                    const _condition_type& condition_id) const
 {
 	size_t index = I - m_current_state.conditions().begin();
-	m_current_state.add_condition(I, COperatorCondition(condition_id, evaluator(condition_id)->evaluate()));
+	_condition_evaluator_ptr evaluator_impl = evaluator(condition_id);
+	_value_type value = _value_type();
+	if (evaluator_impl)
+		value = evaluator_impl->evaluate();
+	else
+	{
+		static u32 reported = 0;
+		if (reported < 8)
+		{
+			++reported;
+			Msg("! [ZONA stream] planner skipped missing evaluator %u", u32(condition_id));
+		}
+	}
+	m_current_state.add_condition(I, COperatorCondition(condition_id, value));
 	I = m_current_state.conditions().begin() + index;
 	E = m_current_state.conditions().end();
 }

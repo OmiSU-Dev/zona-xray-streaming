@@ -95,11 +95,11 @@ CAI_Space::~CAI_Space()
 	VERIFY(!m_game_graph);
 }
 
-void CAI_Space::load(LPCSTR level_name)
+void CAI_Space::load(LPCSTR level_name, bool keep_script_state)
 {
 	VERIFY(m_game_graph);
 
-	unload(true);
+	unload(true, keep_script_state);
 
 #ifdef DEBUG
 	Memory.mem_compact		();
@@ -142,12 +142,15 @@ void CAI_Space::load(LPCSTR level_name)
 #endif
 }
 
-void CAI_Space::unload(bool reload)
+void CAI_Space::unload(bool reload, bool keep_script_state)
 {
 	if (g_dedicated_server)
 		return;
 
-	script_engine().unload();
+	// A streamed border swap reloads the walk-mesh under a live session.
+	// lua_settop here drops the stack those scripts are still using.
+	if (!keep_script_state)
+		script_engine().unload();
 
 	xr_delete(m_doors_manager);
 	xr_delete(m_graph_engine);

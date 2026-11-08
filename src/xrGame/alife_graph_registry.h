@@ -56,7 +56,7 @@ protected:
 	xr_vector<CSE_ALifeDynamicObject*> m_temp;
 
 protected:
-	void setup_current_level();
+	void setup_current_level(bool keep_script_state = false);
 	template <typename F, typename C>
 	IC void iterate(C& c, const F& f);
 

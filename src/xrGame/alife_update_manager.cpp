@@ -24,6 +24,7 @@
 #include "profiler.h"
 #include "mt_config.h"
 #include "zona_streaming.h"
+#include "GameObject.h"
 
 using namespace ALife;
 #ifdef	ENGINE_LUA_ALIFE_UPDAGE_MANAGER_CALLBACKS
@@ -153,6 +154,15 @@ void CALifeUpdateManager::mount_level_population()
 		switch_offline(online[i]);
 
 	graph().retarget_level();
+
+	if (actor && ai().level_graph().valid_vertex_id(actor->m_tNodeID))
+	{
+		if (CGameObject* client = smart_cast<CGameObject*>(Level().Objects.net_Find(actor->ID)))
+		{
+			client->ai_location().level_vertex(actor->m_tNodeID);
+			client->ai_location().game_vertex(actor->m_tGraphID);
+		}
+	}
 
 	u32 brought_online = 0;
 	ALife::D_OBJECT_P_MAP::const_iterator LI = graph().level().objects().begin();

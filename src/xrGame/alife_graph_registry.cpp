@@ -65,7 +65,7 @@ void CALifeGraphRegistry::update(CSE_ALifeDynamicObject* object)
 		add(object, object->m_tGraphID);
 }
 
-void CALifeGraphRegistry::setup_current_level()
+void CALifeGraphRegistry::setup_current_level(bool keep_script_state)
 {
 	m_level = xr_new<CALifeLevelRegistry>(ai().game_graph().vertex(actor()->m_tGraphID)->level_id());
 	level().set_process_time(m_process_time);
@@ -92,13 +92,13 @@ void CALifeGraphRegistry::setup_current_level()
 
 	int id = pApp->Level_ID(*(*I).second.name(), "1.0", true);
 	VERIFY3(id >= 0, "Level is corrupted or doesn't exist", *(*I).second.name());
-	ai().load(*(*I).second.name());
+	ai().load(*(*I).second.name(), keep_script_state);
 }
 
 void CALifeGraphRegistry::retarget_level()
 {
 	xr_delete(m_level);
-	setup_current_level();
+	setup_current_level(true);
 
 	string_path fn_game;
 	if (FS.exist(fn_game, "$level$", "level.game"))
